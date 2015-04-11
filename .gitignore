@@ -1,3 +1,11 @@
+# my ignores
+*.tlog
+*.sdf
+*.pdb
+*.rar
+*.log
+*.idb
+*.xml
 # Compiled Object files
 *.slo
 *.lo
