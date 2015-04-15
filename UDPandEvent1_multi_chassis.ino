@@ -9,8 +9,8 @@
 
 
 //Global parameters
-char timeServer[] = "192.168.1.77"; // The server's IP address
-const int NTP_PACKET_SIZE = 128; // The UDP data header to read in bytes
+char timeServer[] = "192.168.1.76"; // The server's IP address
+const int NTP_PACKET_SIZE = 64; // The UDP data header to read in bytes
 String mDebugMessage = "";
 uint8_t packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets
 uint8_t RecvBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets
@@ -146,17 +146,18 @@ int lastDir = 0;
 // Motor 1
 int dir1PinA = 2;
 int dir2PinA = 3;
-int speedPinA = 9; // Needs to be a PWM pin to be able to control motor speed
+int speedPinA = 6; // Needs to be a PWM pin to be able to control motor speed
 
 // Motor 2
 int dir1PinB = 4;
 int dir2PinB = 5;
-int speedPinB = 10; // Needs to be a PWM pin to be able to control motor speed
+int speedPinB = 7; // Needs to be a PWM pin to be able to control motor speed
 
 // Servo 1
-int servoPin = 12;
+int servoPin = 11;
 Servo myservo;
 int pos = 0;
+int servoMoveSpeed = 5; //this is actually the delay in ms between each pos change
 
 // program setup
 void(*resetFunc) (void) = 0;//declare reset function at address 0
@@ -634,6 +635,7 @@ void Servo_1_forward_step()
 	{
 		pos += 1;
 		myservo.write(pos);
+		delay(servoMoveSpeed);
 		if (debugLevel == 2 || debugLevel == 4) mDebugMessage += "Servo_1_forward_step\n";
 		if (debugLevel == 1 || debugLevel == 4) Serial.println("Servo_1_forward_step");
 		if (debugLevel == 1 || debugLevel == 4) Serial.println("   ");
@@ -646,6 +648,7 @@ void Servo_1_backward_step()
 	{
 		pos -= 1;
 		myservo.write(pos);
+		delay(servoMoveSpeed);
 		if (debugLevel == 2 || debugLevel == 4) mDebugMessage += "Servo_1_backward_step\n";
 		if (debugLevel == 1 || debugLevel == 4) Serial.println("Servo_1_backward_step");
 		if (debugLevel == 1 || debugLevel == 4) Serial.println("   ");

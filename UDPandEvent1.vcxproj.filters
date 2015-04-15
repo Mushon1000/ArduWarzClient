@@ -47,5 +47,8 @@
     <ClInclude Include="Visual Micro\.UDPandEvent1_multi_chassis.vsarduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Visual Micro\.ArduWarzClient.vsarduino.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

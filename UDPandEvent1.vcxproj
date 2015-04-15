@@ -46,7 +46,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>C:\Users\Shai\Documents\Arduino\hardware\digistump\sam\cores\digix;C:\Users\Shai\Documents\Arduino\hardware\digistump\sam\variants\digix;C:\Program Files (x86)\Arduino\libraries\Servo\src;C:\Program Files (x86)\Arduino\libraries\Servo\src\utility;C:\Program Files (x86)\Arduino\libraries\Servo\arch\sam;C:\Program Files (x86)\Arduino\libraries\Servo\arch\sam\utility;C:\Users\Shai\Documents\Arduino\hardware\digistump\sam\libraries\DigiFi;C:\Users\Shai\Documents\Arduino\hardware\digistump\sam\libraries\DigiFi\utility;C:\Users\Shai\Documents\Arduino\hardware\digistump\sam\system\CMSIS\CMSIS\Include\;C:\Users\Shai\Documents\Arduino\hardware\digistump\sam\system\CMSIS\Device\ATMEL\;C:\Users\Shai\Documents\Arduino\hardware\digistump\sam\system\libsam;C:\Users\Shai\Documents\Arduino\hardware\digistump\sam\system\libsam\include;C:\Program Files (x86)\Arduino\/hardware/tools/g++_arm_none_eabi\arm-none-eabi\include;C:\Program Files (x86)\Arduino\/hardware/tools/g++_arm_none_eabi\arm_none_eabi\include\;C:\Program Files (x86)\Arduino\/hardware/tools/g++_arm_none_eabi\lib\gcc\arm-none-eabi\4.4.1\include;C:\Program Files (x86)\Arduino\/hardware/tools/g++_arm_none_eabi\lib\gcc\arm-none-eabi\4.4.1\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ForcedIncludeFiles>C:\Drive\Ideas\ArduinoWarz\Multi-platform chassis\UDPandEvent1_multi_chassis\Visual Micro\.UDPandEvent1_multi_chassis.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles>C:\Drive\Ideas\ArduinoWarz\Multi-platform chassis\UDPandEvent1_multi_chassis\ArduWarzClient\Visual Micro\.ArduWarzClient.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
       <PreprocessorDefinitions>__SAM3X8E__;USB_PID=0x078A;USB_VID=0x16D0;USBCON;ARDUINO=150;ARDUINO_MAIN;printf=iprintf;__SAM__;__sam__;F_CPU=84000000L;__cplusplus;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -93,6 +93,7 @@
     <ClInclude Include="ServoTimers.h">
       <FileType>CppCode</FileType>
     </ClInclude>
+    <ClInclude Include="Visual Micro\.ArduWarzClient.vsarduino.h" />
     <ClInclude Include="Visual Micro\.UDPandEvent1_multi_chassis.vsarduino.h" />
     <ClInclude Include="wiring_constants.h">
       <FileType>CppCode</FileType>
