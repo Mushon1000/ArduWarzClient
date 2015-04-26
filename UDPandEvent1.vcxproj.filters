@@ -50,5 +50,8 @@
     <ClInclude Include="Visual Micro\.ArduWarzClient.vsarduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MyTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
