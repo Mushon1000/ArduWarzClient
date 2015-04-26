@@ -5,44 +5,35 @@
 #include "Servo.h"
 #include <Arduino.h>
 #include "DigiFi.h"
+#include "MyTypes.h"
+using namespace MyTypes;
 
 
 
-//Global parameters
-char timeServer[] = "192.168.1.76"; // The server's IP address
-const int NTP_PACKET_SIZE = 64; // The UDP data header to read in bytes
-String mDebugMessage = "";
-uint8_t packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets
-uint8_t RecvBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets
+
+/***************************************************************************************************/
+/*	Global parameters
+/***************************************************************************************************/
+char arduWarzServer[] = "192.168.2.76"; // The server's IP address
+const int ARDUWARZ_PACKET_SIZE = 64; // The UDP data header to read in bytes
+String mDebugMessage = ""; // A string to concatinate debug message in order to send as packet to server
+uint8_t packetBuffer[ARDUWARZ_PACKET_SIZE]; //buffer to hold incoming and outgoing packets
+uint8_t RecvBuffer[ARDUWARZ_PACKET_SIZE]; //buffer to hold incoming and outgoing packets
 uint32_t packetCount = 0; //Total incoming packets
 DigiFi client; //digix wifi client
 int timestamp; //last state of millis
 int lapseTimestamp; //for calc if duration passed
 unsigned long last_seq_num = 0;
 int delayFactor = 1; //this is the number delay will be multiplied in when getting duration in unit command
-int debugLevel = 0; //0 - no debug, 1 - serial only, 2 - packet only, 4 - both
-int PWMPWR = 255;
+int debugLevel = 1; //0 - no debug, 1 - serial only, 2 - packet only, 4 - both
+int PWMPWR = 255; // The power to drive motors, between 0-255, when only about 100 and above actually move thems
 
-struct OperationPacket {
+
+
+struct OperationPacket { //A struct to pass to functions as a result of commands
 	unsigned int Operation; //change to uint16_t Operation
 	unsigned int Duration;
 };
-
-enum ArduWarsMsgTypes {GLOBALALERT=0,GLOBALINFORM=1,
-					   UNITALERT=10,UNITQUERY=11,UNITINFORM=12,UNITCOMMAND=13,
-					   COORDSUPDATE = 20, COORDSQUERY=21};
-enum BaseMotorOperations { MOTORAFORWARD=10, MOTORABACKWARD=11, MOTORASTOP=12, MOTORBFORWARD=13, MOTORBBACKWARD=14, MOTORBSTOP=15,
-                           MOTORAFORWARDTIMED=20, MOTORABACKWARDTIMED=21, MOTORASTOPTIMED=22, MOTORBFORWARDTIMED=23, MOTORBBACKWARDTIMED=24, MOTORBSTOPTIMED=25 };
-enum ComplexMotorOperations { MOVEFORWARD=100, MOVEBACKWARD=101, MOVEFORWARDTIMED=102, MOVEBACKWARDTIMED=103,
-                                ROTATELEFT=104, ROTATERIGHT=105, ROTATELEFTTIMED=106, ROTATERIGHTTIMED=107, 
-                                ROTATELEFTDEGREES=108, ROTATERIGHTDEGREES=109, MOVESTOP=110};
-enum BaseServoOperations { SERVOAFORWARD = 210, SERVOABACKWARD = 211, 
-						   SERVOAFORWARDSTEPS = 220, SERVOABACKWARDSTEPS = 221};
-enum SetupOperations { DEVICESWRESET = 255, DEVICEMOTORSPOWER = 256};
-//enum Operations my_Operations = FORWARD;
-
-
-
 
 
 // the event queue
@@ -51,6 +42,13 @@ EventQueue q;
 // the event dispatcher
 EventDispatcher disp(&q);
 
+/***************************************************************************************************/
+/*	Global parameters
+/***************************************************************************************************/
+
+
+
+/* keeping this code for future use
 // use this analog channel
 #define AN_CHAN 0
 
@@ -59,17 +57,12 @@ EventDispatcher disp(&q);
 // increase value for noisy sources
 #define AN_DELTA 5
 
-// led to be turned on or off
-#define LED_PIN 13
-
-
-/*
 // analog event handler
 void analogHandler(int event, int param) {
 	Serial.print("Analog value: ");
 	Serial.println(param);
 }
-*/
+
 
 // this function generates an EV_TIME event
 // each 1000 ms
@@ -85,64 +78,30 @@ void timeManager() {
 }
 
 
-// //this function generates an EV_ANALOG event
-// //whenever the analog channel AN_CHAN changes
-//void analogManager() {
-//	static int prevValue = 0;
-//	int currValue;
-//
-//	currValue = analogRead(AN_CHAN);
-//
-//	if (abs(currValue - prevValue) >= AN_DELTA) {
-//		prevValue = currValue;
-//		q.enqueueEvent(Events::EV_ANALOG0, currValue, currValue);    // use param to pass analog value to event handler
-//	}
-//}
+ //this function generates an EV_ANALOG event
+ //whenever the analog channel AN_CHAN changes
+void analogManager() {
+	static int prevValue = 0;
+	int currValue;
 
+	currValue = analogRead(AN_CHAN);
 
-
-void PacketRecvManager() {
-	//int Operation;
-	//int Duration;
-	//struct OperationPacket parameters;
-	//recvPacketNew();
-	//parameters = recvPacketNew();
-	//parameters.Duration = recvPacket().Duration;
-	//parameters.Operation = recvPacket().Operation;
-
-	//Serial.println("***");
-	/*
-	if (parameters.Operation == 0 || parameters.Operation == 18 || parameters.Operation == 87 || parameters.Operation > 255)
-		return;*/
-
-	//Serial.print("parameters.Duration: ");
-	//Serial.println(parameters.Duration);
-
-	//Serial.print("parameters.Operation: ");
-	//Serial.println(parameters.Operation);
-	/*
-	if (parameters.Operation == 1){
-		q.enqueueEvent(Events::EV_RECPACKET1, parameters.Operation, parameters.Duration);    // use param to pass analog value to event handler
+	if (abs(currValue - prevValue) >= AN_DELTA) {
+		prevValue = currValue;
+		q.enqueueEvent(Events::EV_ANALOG0, currValue, currValue);    // use param to pass analog value to event handler
 	}
-	else if (parameters.Operation == 228){
-		Serial.print("enqueueEvent: ");
-		Serial.println(Events::EV_RECPACKET2);
-		q.enqueueEvent(Events::EV_RECPACKET2, parameters.Operation, parameters.Duration);    // use param to pass analog value to event handler
-	}
-	else if (parameters.Operation == 3){
-		q.enqueueEvent(Events::EV_RECPACKET3, parameters.Operation, parameters.Duration);    // use param to pass analog value to event handler
-	}
-	else if (parameters.Operation == 4){
-		q.enqueueEvent(Events::EV_RECPACKET4, parameters.Operation, parameters.Duration);    // use param to pass analog value to event handler
-	}
-	*/
 }
 
+*/
 
 
 
 
 int lastDir = 0;
+
+/***************************************************************************************************/
+/*	Pins layout declaration
+/***************************************************************************************************/
 // Motor 1
 int dir1PinA = 2;
 int dir2PinA = 3;
@@ -159,46 +118,63 @@ Servo myservo;
 int pos = 0;
 int servoMoveSpeed = 5; //this is actually the delay in ms between each pos change
 
-// program setup
-void(*resetFunc) (void) = 0;//declare reset function at address 0
+// led to be turned on or off
+#define LED_PIN 13
+/***************************************************************************************************/
+/*	Pins layout declaration
+/***************************************************************************************************/
 
+
+// program setup
+void(*resetFunc) (void) = 0; //declare reset function at address 0 - use for doing a remote SW reset (problem is that if board is stuck this reset cannot be called...
+void Setup_SW_Reset(int opcode, int dummy, int duration)
+{
+	Serial.println("SW reset has been called, but disabled");
+	//resetFunc(); //call reset
+}
+
+
+
+
+/***************************************************************************************************/
+/*	Arduino setup function
+/***************************************************************************************************/
 void setup() {
 	delay(2000);
-	Serial.begin(9600);
-	FlushInput();
-	Serial.println("Serial started");
-	//pinMode(12, OUTPUT);
-	
-	//digitalWrite(11, LOW);
-	//digitalWrite(12, LOW);
-//DigiX trick - since we are on serial over USB wait for character to be entered in serial terminal
- // while(!Serial.available()){
- //   Serial.println("Enter any key to begin");
+	Serial.begin(9600); //Serial with the arduino serial line
+	FlushInput(); //clear the serial line by reading it
+	Serial.println("Serial started, Server IP: ");
+	Serial.println(arduWarzServer);
     delay(1000);
- // }
-	ledblinkRED(200);
-    // start the connection:
+ 
+	ledblinkRED(200); //blink to debug with led - could be removed
+    // start the connection to wifi module:
    client.begin(115200);
    client.setDebug(false); 
-  //wait for module to be ready
+  //wait for wifi module to be ready
   while (client.ready() != 1)
   {
-	if (debugLevel == 1 || debugLevel == 4) Serial.println("Connecting to network...");
+	if (debugLevel == 1 || debugLevel == 4) Serial.println("Connecting to network..."); //debug level was added since there were phenomenon when serial line was busy with debug messages
     delay(1000);
-	ledblinkRED(50);
+	ledblinkRED(10); //blink to debug with led - could be removed
   } 
 
-  ledblinkBLUE(50);
+  ledblinkBLUE(50); //blink to debug with led - could be removed
 
   client.setMode(UDP); //must come before connect
   client.reset();
-  client.connect(timeServer,9001);
-  //client.setNetParams("UDP","CLIENT",9002,"192.168.1.77"); //this causes only 1 time loop for some reason
+  client.connect(arduWarzServer,9001); //connect to UDP server - not sure why a connection is needed but it wont work without it...
+  //client.setNetParams("UDP","CLIENT",9002,"192.168.1.77"); //this causes only 1 time loop for some reason //setNetParams should work but seems to have a bug
   if (debugLevel == 1 || debugLevel == 4) Serial.println("Setting up UDP connection");
   
 
 	//disp.addEventListener(Events::EV_RECPACKET3, fun3);
 	last_seq_num = 0;
+
+	/***************************************************************************************************/
+	/*	function disaptcher attachments
+	/*	this is the way to bound commmand event code to function
+	/***************************************************************************************************/
 	disp.addEventListener(102, go_forward_timed);
 	disp.addEventListener(103, go_reverse_timed);
 	disp.addEventListener(106, go_left_timed);
@@ -209,8 +185,15 @@ void setup() {
 
 	disp.addEventListener(255, Setup_SW_Reset);
 	disp.addEventListener(256, Setup_Motors_Power);
+	/***************************************************************************************************/
+	/*	function disaptcher attachments
+	/***************************************************************************************************/
 
 
+
+	/***************************************************************************************************/
+	/*	Pins layout mode
+	/***************************************************************************************************/
 	pinMode(dir1PinA, OUTPUT);
 	pinMode(dir2PinA, OUTPUT);
 	pinMode(speedPinA, OUTPUT);
@@ -220,23 +203,30 @@ void setup() {
 	myservo.attach(servoPin);
 	pinMode(servoPin, OUTPUT);
 	myservo.write(pos);
-	
+	/***************************************************************************************************/
+	/*	Pins layout mode
+	/***************************************************************************************************/
 
 }
 
 
-// loop
+/***************************************************************************************************/
+/*	Program loop - this will happen infinitley
+/***************************************************************************************************/
 void loop() {
 	recvPacketNew();
 	disp.run();
 	delay(10);
-	//ledblinkBLUE(5);
-
-
-
-
 	}
+/***************************************************************************************************/
+/*	Program loop - this will happen infinitley
+/***************************************************************************************************/
 
+
+
+/***************************************************************************************************/
+/*	Debug functions (used only for debugging)
+/***************************************************************************************************/
 void ledblinkRED(int Delay)
 {
 	digitalWrite(13, HIGH);
@@ -255,17 +245,23 @@ void FlushInput()
 {
 	while (Serial.available() > 0) Serial.read();
 }
+/***************************************************************************************************/
+/*	Debug functions (used only for debugging)
+/***************************************************************************************************/
 
 
+/***************************************************************************************************/
+/*	Packet handling
+/***************************************************************************************************/
 
-/*Packet handling
--------------------------------------------------------------------------------
+/*
+This function should handle ack responses to the server upon packets arrival
+It is not finished for the moment
 */
-
 unsigned long sendAck(unsigned long last_seq_num) //TODO add unit id and cunstruct the correct ack packet
 {
 	// set all bytes in the buffer to 0
-	// memset(packetBuffer, 0, NTP_PACKET_SIZE);
+	// memset(packetBuffer, 0, ARDUWARZ_PACKET_SIZE);
 	packetBuffer[0] = (int)((last_seq_num >> 24) & 0xFF);
 	packetBuffer[1] = (int)((last_seq_num >> 16) & 0xFF);
 	packetBuffer[2] = (int)((last_seq_num >> 8) & 0XFF);
@@ -278,19 +274,15 @@ unsigned long sendAck(unsigned long last_seq_num) //TODO add unit id and cunstru
 			packetBuffer[4 + i] = (uint8_t)mDebugMessage[i];
 		}
 	}
-	//client.connect(timeServer, 9002);
-	//client.setNetParams("UDP", "CLIENT", 9002, "192.168.1.77");
-	
-	
-	client.write(packetBuffer, NTP_PACKET_SIZE);
+client.write(packetBuffer, ARDUWARZ_PACKET_SIZE);
 	
 	
 	if (debugLevel == 2 || debugLevel == 4) mDebugMessage = "";
-	//client.setNetParams("UDP", "CLIENT", 9001, "192.168.1.77");
-	//client.connect(timeServer, 9001);
-
 }
 
+/*
+This function doesn't work, and I consider removing the crc from the protocol
+*/
 boolean calc_crc32(uint32_t crc, const char *buf, size_t len) //checksum calc from http://rosettacode.org/wiki/CRC-32#C
 {
 	static uint32_t table[256];
@@ -335,47 +327,10 @@ boolean calc_crc32(uint32_t crc, const char *buf, size_t len) //checksum calc fr
 	}
 }
 
+
 /*
-struct OperationPacket recvPacket(){
-	int readSize = 3;
-	struct OperationPacket parameters;
-
-	parameters.Duration = 0;
-	parameters.Operation = 0;
-
-	//int DataValue;
-	//int Duration;
-
-	if (client.available()) {
-	
-		client.read(RecvBuffer, readSize); // read the packet into the buffer
-		//Serial.print("recieved size: ");
-		//Serial.print(readSize);
-		//Serial.print(Serial1.available());
-		Serial.println();
-		for (size_t i = 0; i < readSize; i++)
-		{
-			Serial.print("[");
-			Serial.print(RecvBuffer[i]);
-			Serial.print("]");
-			
-			if (i == 1){ //formally 1
-				parameters.Operation = RecvBuffer[i];
-			}
-			if (i == 2){ //formally 2
-				parameters.Duration = RecvBuffer[i];
-			}
-		}
-		
-		packetCount += 1;
-		Serial.println();
-		Serial.print("packetCount: ");
-		Serial.println(packetCount, DEC);
-		return parameters;
-	}
-}
+This function is the receiving packets function that handles parsing of the packet, calling the ack function, and the correct command action functions
 */
-
 struct OperationPacket recvPacketNew(){ //http://www.tutorialspoint.com/cprogramming/c_quick_guide.htm
 	unsigned int readSize		= 23;
 	byte protocol_id			= 23;	//0x17
@@ -526,22 +481,44 @@ struct OperationPacket recvPacketNew(){ //http://www.tutorialspoint.com/cprogram
 	}
 }
 
-/*Packet handling
--------------------------------------------------------------------------------
+/*
+This function handles only UNITCOMMAND type of packets
 */
+void MessageHandlingUNITCOMMAND(int msgDataOffset){
+	int commandsCount = RecvBuffer[msgDataOffset];
+	struct OperationPacket parameters;
 
+	parameters.Duration = 0;
+	parameters.Operation = 0;
 
+	for (int i = 0; i < commandsCount; i++)
+	{
+		unsigned int opCode = ((int)RecvBuffer[msgDataOffset + 1 + (i * 8)] << 8) | RecvBuffer[msgDataOffset + 2 + (i * 8)]; //msgDataOffset + 1 for count byte + i
+		unsigned int duration = (((long)RecvBuffer[msgDataOffset + 4 + (i * 8)]) << 24 | ((long)RecvBuffer[msgDataOffset + 5 + (i * 8)]) << 16 | ((long)RecvBuffer[msgDataOffset + 6 + (i * 8)]) << 8 | (long)RecvBuffer[msgDataOffset + 7 + (i * 8)]);
 
+		//Serial.print("opCode: ");
+		//Serial.println(opCode);
+		//Serial.print("duration: ");
+		//Serial.println(duration);
+		q.enqueueEvent(opCode, opCode, duration);
+		//sendAck(1);
+	}
 
-/*Robot movement
--------------------------------------------------------------------------------
-*/
-
-void Setup_SW_Reset(int opcode, int dummy, int duration)
-{
-	Serial.println("SW reset has been called, but disabled");
-	//resetFunc(); //call reset
 }
+/***************************************************************************************************/
+/*	Packet handling
+/***************************************************************************************************/
+
+
+
+/***************************************************************************************************/
+/*	Robot movement functions
+/	need to add rotate function that enable turning while moving forward\backwards
+/	need to change implementation of all "timed" functions to not use delay since this is the major
+/	block in the correct operation of the robot
+/***************************************************************************************************/
+
+
 void Setup_Motors_Power(int opcode, int dummy, int duration)
 {
 	PWMPWR = duration;
@@ -708,29 +685,8 @@ void go_right_timed(int opcode, int dummy, int duration){
 }
 
 
-/*Robot movement
--------------------------------------------------------------------------------
-*/
+/***************************************************************************************************/
+/*	Robot movement functions
+/***************************************************************************************************/
 
 
-void MessageHandlingUNITCOMMAND(int msgDataOffset){
-	int commandsCount = RecvBuffer[msgDataOffset];
-	struct OperationPacket parameters;
-
-	parameters.Duration = 0;
-	parameters.Operation = 0;
-
-	for (int i = 0; i < commandsCount; i++)
-	{
-		unsigned int opCode = ((int)RecvBuffer[msgDataOffset + 1 + (i * 8)] << 8) | RecvBuffer[msgDataOffset + 2 + (i * 8)]; //msgDataOffset + 1 for count byte + i
-		unsigned int duration = (((long)RecvBuffer[msgDataOffset + 4 + (i * 8)]) << 24 | ((long)RecvBuffer[msgDataOffset + 5 + (i * 8)]) << 16 | ((long)RecvBuffer[msgDataOffset + 6 + (i * 8)]) << 8 | (long)RecvBuffer[msgDataOffset + 7 + (i * 8)]);
-
-		//Serial.print("opCode: ");
-		//Serial.println(opCode);
-		//Serial.print("duration: ");
-		//Serial.println(duration);
-		q.enqueueEvent(opCode, opCode, duration);
-		//sendAck(1);
-	}
-
-}
